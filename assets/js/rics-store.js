@@ -121,7 +121,7 @@ class RICSStore {
                 return trait.canAdd || trait.canRemove;
             })
             .filter(trait => trait.addPrice > 0 || trait.removePrice > 0); // Only traits with prices
-    },
+    }
 
     processTraitDescription(description) {
         // Replace all common pawn placeholders with traditional names
@@ -143,7 +143,7 @@ class RICSStore {
             .replace(/\[PAWN_objective\]/g, 'him')
             .replace(/\[PAWN_label\]/g, 'Timmy')
             .replace(/\[PAWN_def\]/g, 'Timmy');
-    },
+    }
 
     processRacesData(data) {
         // Adjust this based on your actual Races JSON structure
