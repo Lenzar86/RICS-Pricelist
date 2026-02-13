@@ -209,6 +209,7 @@ processRacesData(racesObject) {
                 allowCustomXenotypes: raceData.AllowCustomXenotypes || false,
                 defaultXenotype: raceData.DefaultXenotype || 'None',
                 enabled: raceData.Enabled !== false,
+                modActive: raceData.ModActive !== false, // NEW: Default to true for backward compatibility
                 allowedGenders: raceData.AllowedGenders || {},
                 xenotypePrices: raceData.XenotypePrices || {},
                 enabledXenotypes: raceData.EnabledXenotypes || {}
@@ -220,7 +221,7 @@ processRacesData(racesObject) {
                 Object.entries(baseRace.enabledXenotypes).forEach(([xenotype, isEnabled]) => {
                     if (isEnabled && baseRace.xenotypePrices[xenotype] !== undefined) {
                         const rawPrice = baseRace.xenotypePrices[xenotype];
-                        const roundedPrice = Math.round(rawPrice); // ← round here
+                        const roundedPrice = Math.round(rawPrice);
 
                         xenotypeEntries.push({
                             defName: `${raceKey}_${xenotype}`,
@@ -229,27 +230,29 @@ processRacesData(racesObject) {
                             isXenotype: true,
                             parentRace: baseRace.name,
                             xenotype: xenotype,
-                            xenotypePrice: roundedPrice, // also store rounded
+                            xenotypePrice: roundedPrice,
                             minAge: baseRace.minAge,
                             maxAge: baseRace.maxAge,
                             enabled: true,
+                            modActive: baseRace.modActive, // NEW: Pass through mod active status
                             allowedGenders: baseRace.allowedGenders
                         });
                     }
                 });
             }
 
-            // Base race entry – already rounded above
+            // Base race entry
             const baseRaceEntry = {
                 defName: raceKey,
                 name: baseRace.name,
-                basePrice: baseRace.basePrice, // already rounded
+                basePrice: baseRace.basePrice,
                 isXenotype: false,
                 minAge: baseRace.minAge,
                 maxAge: baseRace.maxAge,
                 allowCustomXenotypes: baseRace.allowCustomXenotypes,
                 defaultXenotype: baseRace.defaultXenotype,
                 enabled: baseRace.enabled,
+                modActive: baseRace.modActive, // NEW: Include mod active status
                 xenotypeCount: xenotypeEntries.length,
                 allowedGenders: baseRace.allowedGenders
             };
@@ -257,7 +260,10 @@ processRacesData(racesObject) {
             return [baseRaceEntry, ...xenotypeEntries];
         })
         .flat()
-        .filter(race => race.enabled && race.basePrice > 0);
+        .filter(race => 
+            race.enabled && 
+            race.modActive !== false  // NEW: Only show active mods
+        );
 }
 
     renderAllTabs() {
